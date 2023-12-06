@@ -12,26 +12,56 @@ counter = 0
 for line in gameFile:
     if counter == 0: print(line)
     gameResults.append(line.strip().split(': '))
-    #gameResults[counter][1],gameResults[counter][2] = gameResults[counter][1].split(' | ') Changed this - trying to split into indexes
+    [gameResults[counter][0]].append(gameResults[counter])
+    gameResults[counter][0],gameResults[counter][1] = gameResults[counter][1].split(' | ') # Changed this - trying to split into indexes
     # [counter][1] and [counter][2] but 2 is OOB
     counter += 1
-    if counter == 5: break
 
+# Parses a cardset, which is a single string of scores. Reads the scores; for every sequence of ints, build an int string. When we reach
+# a character that isn't an int, append the int string to a list and clear our int string. Once we've parsed the whole list, return the
+# array.
 def parseCard(cardSet):
     counter = 0
-    print('Cardset: ',cardSet)
+    #print('Cardset: ',cardSet)
     numBuilder = ''
     numArray = []
     for x in range(0, len(cardSet)):
+        #print('Cardset target: ',cardSet[x], ' ',numBuilder)
+        #print(x,' ',len(cardSet)-1)
         if (cardSet[x].isnumeric()):
             numBuilder+=str(cardSet[x])
-        else:
+        if((not cardSet[x].isnumeric()) or x == len(cardSet)-1):
             if len(numBuilder)>0: numArray.append(numBuilder)
             numBuilder = ''
     return numArray
 
-print(gameResults)
-print('Parsed: ',parseCard(gameResults[0][1][0]))
-print('Parsed: ',parseCard(gameResults[0][1][1]))
+#print(gameResults)
+#print('Parsed: ',parseCard(gameResults[0][0]))
+#print('Parsed: ',parseCard(gameResults[0][1]))
+grandTotal = 0
 
+for x in range (0, len(gameResults)):
+    parsedWinners = parseCard(gameResults[x][0])
+    #if(x % 10 == 0):
+    #    print(x,' ', 'Winners: ',parsedWinners)
+    parsedScratches = parseCard(gameResults[x][1])
+    #if(x % 10 == 0):
+    #    print(x,' ','Scratchies: ',parsedScratches)
+    counter = 0
+    score = 0
+    #print('Index: ',x)
 
+    for item in parsedScratches:
+        if item in parsedWinners:
+            #print('Matched: ', item)
+            if score < 1:
+                #print('Adding 1 to ',score)
+                score += 1
+            elif score > 0:
+                #print(score)
+                score = score * 2
+            #if(x%10 == 0):
+            #    print(x,' ',item,' ',score)
+    grandTotal += score
+
+print(grandTotal)
